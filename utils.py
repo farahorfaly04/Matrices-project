@@ -93,7 +93,7 @@ def calculate_eigen(covariance_matrix):
     """ Finding the Eigenvalues and Eigenvectors of the covariance matrix"""
 
     # Specify the number of principal components (eigenvectors) to compute
-    n_components = 5
+    n_components = 20
 
     # Perform PCA and extract the subset of eigenvalues and eigenvectors
     pca = PCA(n_components=n_components)
@@ -125,15 +125,18 @@ def calculate_weights(eigenfaces, vectors_minus_mean):
         image_weights = [float(np.dot(eigenface, vector)) for eigenface in eigenfaces_reshaped]
         
         weights.append(image_weights)
-    print(len(weights))  
-    return eigenfaces_reshaped, weights
+
+    return weights
 
 def euclidean_distance(v1, v2):
     """Calculate the Euclidean distance between two lists of numbers."""
-    distance = math.sqrt(sum((a - b) ** 2 for a, b in zip(v1, v2)))
-    return distance
+    distance = 0.0
+    for i in range(len(v1)):
+        distance += (v1[i] - v2[i]) ** 2
+    return math.sqrt(distance)
 
-def calculate_distances(test_weight, train_weights):
+def calculate_distances(test_weights, train_weights):
     """Calculate the distance between a single test weight and a list of train weights."""
-    distances = [euclidean_distance(test_weight, train_weight) for train_weight in train_weights]
-    return distances
+    distances = [[euclidean_distance(test_weight, train_weight) for train_weight in train_weights] for test_weight in test_weights]
+
+    return distances 
