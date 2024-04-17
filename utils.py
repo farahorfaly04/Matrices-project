@@ -3,6 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import math
 
 # Function to load and resize image
 # Function to convert image to matrix
@@ -92,7 +93,7 @@ def calculate_eigen(covariance_matrix):
     """ Finding the Eigenvalues and Eigenvectors of the covariance matrix"""
 
     # Specify the number of principal components (eigenvectors) to compute
-    n_components = 20
+    n_components = 5
 
     # Perform PCA and extract the subset of eigenvalues and eigenvectors
     pca = PCA(n_components=n_components)
@@ -104,29 +105,35 @@ def calculate_eigen(covariance_matrix):
     # Subset of eigenvectors
     eigenvectors = pca.components_
     
-
     # Normalize the eigenvectors
     eigenfaces = [eigenvector / np.linalg.norm(eigenvector) for eigenvector in eigenvectors]
-
 
     return eigenvalues, eigenvectors, eigenfaces
 
 def calculate_weights(eigenfaces, vectors_minus_mean):
     """ Calculating the weights of the train images"""
 
-    # List to store weights for each image
-    weights_list = []
+    # Reshape each eigenface into a row vector
+    eigenfaces_reshaped = [(eigenface.flatten().reshape(1,-1)) for eigenface in eigenfaces]
 
-    eigenfaces_reshaped = [(eigenvector.flatten().reshape(-1,1)).T for eigenvector in eigenfaces]
-  
+    # Initialize list to hold all weights lists
+    weights = []
+
     # Calculate weights for each image
-    for i in range(len(vectors_minus_mean) - 1):
+    for vector in vectors_minus_mean:
+        # Calculate the weight for each eigenface and store it
+        image_weights = [float(np.dot(eigenface, vector)) for eigenface in eigenfaces_reshaped]
         
-        # Calculate the weights for the image
-        weights = np.dot(eigenfaces_reshaped[i], vectors_minus_mean[i])
+        weights.append(image_weights)
+    print(len(weights))  
+    return eigenfaces_reshaped, weights
 
-        # Append weights to the list
-        weights_list.append(weights)
+def euclidean_distance(v1, v2):
+    """Calculate the Euclidean distance between two lists of numbers."""
+    distance = math.sqrt(sum((a - b) ** 2 for a, b in zip(v1, v2)))
+    return distance
 
-    return eigenfaces_reshaped, weights_list
-
+def calculate_distances(test_weight, train_weights):
+    """Calculate the distance between a single test weight and a list of train weights."""
+    distances = [euclidean_distance(test_weight, train_weight) for train_weight in train_weights]
+    return distances
