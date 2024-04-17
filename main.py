@@ -1,10 +1,10 @@
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import load_image, create_matrices, create_vectors, display_matrix, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights
+from utils import create_matrices, create_vectors, display_matrix, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights
 
 # List of matrices for training images
-train_matrices = create_matrices('Images/Test Data')
+train_matrices = create_matrices('Images/Train Data')
 test_matrices = create_matrices('Images/Test Data')
 
 # Convert train_matrices to a NumPy array
@@ -14,7 +14,7 @@ train_matrices_array = np.array(train_matrices)
 display_matrix(train_matrices_array[0])
 
 # Display all matrices as images
-display_matrices(train_matrices)
+display_matrices(test_matrices)
 
 # Convert images to vectors
 train_vectors = create_vectors(train_matrices)
@@ -52,7 +52,6 @@ print(eigenvectors)
 # Display the normalized eigenvectors
 print("Eigenfaces (Normalized Eigenvectors):")
 print(eigenfaces)
-print(eigenfaces.shape)
 
 eigenfaces_reshaped, weights_list = calculate_weights(eigenfaces, train_vectors_minus_mean)
 

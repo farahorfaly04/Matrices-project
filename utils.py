@@ -16,12 +16,10 @@ def create_matrices(folder_path):
     """Converts images into matrices"""
     matrices = []
     for dirpath, dirnames, filenames in os.walk(folder_path):
-        matrices = []
         for filename in filenames:
-            if filename.endswith(".jpg"):
-                image_path = os.path.join(dirpath, filename)
-                matrix = load_image(image_path)    
-                matrices.append(matrix)
+            image_path = os.path.join(dirpath, filename)
+            matrix = load_image(image_path)    
+            matrices.append(matrix)
 
     return matrices
 
@@ -43,10 +41,8 @@ def display_matrix(matrix):
 def display_matrices(matrices):
     """Display matrices as images"""
     num_images = len(matrices)
-    print(num_images)
     num_cols = 5  # Number of columns in the display grid
     num_rows = (num_images + num_cols - 1) // num_cols  # Calculate number of rows based on number of images and columns
-    print(num_rows)
 
     plt.figure(figsize=(15, 3*num_rows))  # Adjust figsize based on number of rows
 
@@ -65,7 +61,8 @@ def calculate_mean_face(vectors):
 
     # Calculate the mean face image
     mean_face_vector = np.mean(vectors_matrix, axis=1)
-
+    mean_face_vector = mean_face_vector.flatten().reshape(-1,1)
+    
     return vectors_matrix, mean_face_vector
 
 def display_mean_face(mean_face_vector):
@@ -84,7 +81,7 @@ def calculate_covariance_matrix(vectors_matrix):
    
     # Combine all TEST vectors into one matrix A
     A = vectors_matrix
-
+  
     # Calculate the covariance matrix C
     M = A.shape[1]  # Number of columns in A (number of vectors)
     C = (1/M) * np.dot(A, A.T)
@@ -106,32 +103,27 @@ def calculate_eigen(covariance_matrix):
 
     # Subset of eigenvectors
     eigenvectors = pca.components_
+    
 
     # Normalize the eigenvectors
-    eigenfaces = np.array([eigenvector / np.linalg.norm(eigenvector) for eigenvector in eigenvectors_subset])
+    eigenfaces = [eigenvector / np.linalg.norm(eigenvector) for eigenvector in eigenvectors]
 
 
     return eigenvalues, eigenvectors, eigenfaces
 
 def calculate_weights(eigenfaces, vectors_minus_mean):
     """ Calculating the weights of the train images"""
-    # Transpose eigenfaces to match the shape of subtracted images
-    # Reshape to (12544, 20) to align with the shape of the subtracted images
-    eigenfaces_reshaped = eigenfaces.T  # Transpose to match dimensions
-
-    # List of subtracted images
-    subtracted_images = vectors_minus_mean
 
     # List to store weights for each image
     weights_list = []
 
+    eigenfaces_reshaped = [(eigenvector.flatten().reshape(-1,1)).T for eigenvector in eigenfaces]
+  
     # Calculate weights for each image
-    for image in subtracted_images:
-        # Flatten the subtracted image to a column vector
-        image_vector = image.flatten().reshape(-1, 1)
-
+    for i in range(len(vectors_minus_mean) - 1):
+        
         # Calculate the weights for the image
-        weights = np.dot(eigenfaces_reshaped, image_vector)
+        weights = np.dot(eigenfaces_reshaped[i], vectors_minus_mean[i])
 
         # Append weights to the list
         weights_list.append(weights)
