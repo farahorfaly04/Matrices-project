@@ -42,7 +42,7 @@ def display_matrix(matrix):
 def display_matrices(matrices):
     """Display matrices as images"""
     num_images = len(matrices)
-    num_cols = 5  # Number of columns in the display grid
+    num_cols = 10 # Number of columns in the display grid
     num_rows = (num_images + num_cols - 1) // num_cols  # Calculate number of rows based on number of images and columns
 
     plt.figure(figsize=(15, 3*num_rows))  # Adjust figsize based on number of rows

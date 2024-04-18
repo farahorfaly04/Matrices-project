@@ -4,8 +4,8 @@ import numpy as np
 from utils import create_matrices, create_vectors, display_matrix, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights, euclidean_distance, calculate_distances
 
 # List of matrices for training images
-train_matrices = create_matrices('Images/Train Data')
-test_matrices = create_matrices('Images/Test Data')
+train_matrices = create_matrices('faces2/train')
+test_matrices = create_matrices('faces2/test')
 
 # Convert train_matrices to a NumPy array
 train_matrices_array = np.array(train_matrices)
@@ -15,6 +15,7 @@ train_matrices_array = np.array(train_matrices)
 
 # Display all matrices as images
 display_matrices(train_matrices)
+display_matrices(test_matrices)
 
 # Convert images to vectors
 train_vectors = create_vectors(train_matrices)
