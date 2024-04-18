@@ -20,37 +20,31 @@ def create_matrices(folder_path):
         for filename in filenames:
             image_path = os.path.join(dirpath, filename)
             matrix = load_image(image_path)    
-            matrices.append(matrix)
+            matrices.append((matrix, filename))
 
     return matrices
 
 def create_vectors(matrices):
     """Convert the matrices into vectors """
     vectors = []
-    for matrix in matrices:
+    for matrix, filename in matrices:
         vector = matrix.flatten().reshape(-1, 1)
-        vectors.append(vector)
+        vectors.append((vector, filename))
 
     return vectors
 
-def display_matrix(matrix):
-    """Display a single matrix"""
-    print("Shape of train_matrices_array:", matrix.shape)
-    print("Ben Affleck 1 Matrix (112x112):")
-    print(matrix) 
-
 def display_matrices(matrices):
-    """Display matrices as images"""
+    """Display matrices as images, with filenames."""
     num_images = len(matrices)
-    num_cols = 10 # Number of columns in the display grid
+    num_cols = 10  # Number of columns in the display grid
     num_rows = (num_images + num_cols - 1) // num_cols  # Calculate number of rows based on number of images and columns
 
     plt.figure(figsize=(15, 3*num_rows))  # Adjust figsize based on number of rows
 
-    for i in range(num_images):
+    for i, (matrix, filename) in enumerate(matrices):
         plt.subplot(num_rows, num_cols, i + 1)
-        plt.imshow(matrices[i], cmap='gray')
-        plt.title(f'Image {i+1}')
+        plt.imshow(matrix, cmap='gray')
+        plt.title(f'Image {filename}')
         plt.axis('off')
 
     plt.show()
@@ -58,7 +52,7 @@ def display_matrices(matrices):
 def calculate_mean_face(vectors):
     """ Calculate the mean face image"""
     # Concatenate all vectors into a single matrix
-    vectors_matrix = np.concatenate(vectors, axis=1)
+    vectors_matrix = np.concatenate([v for v, _ in vectors], axis=1)
 
     # Calculate the mean face image
     mean_face_vector = np.mean(vectors_matrix, axis=1)
@@ -93,7 +87,7 @@ def calculate_eigen(covariance_matrix):
     """ Finding the Eigenvalues and Eigenvectors of the covariance matrix"""
 
     # Specify the number of principal components (eigenvectors) to compute
-    n_components = 20
+    n_components = 40
 
     # Perform PCA and extract the subset of eigenvalues and eigenvectors
     pca = PCA(n_components=n_components)
@@ -120,11 +114,11 @@ def calculate_weights(eigenfaces, vectors_minus_mean):
     weights = []
 
     # Calculate weights for each image
-    for vector in vectors_minus_mean:
+    for vector, filename in vectors_minus_mean:
         # Calculate the weight for each eigenface and store it
         image_weights = [float(np.dot(eigenface, vector)) for eigenface in eigenfaces_reshaped]
         
-        weights.append(image_weights)
+        weights.append((image_weights, filename))
 
     return weights
 
@@ -137,6 +131,7 @@ def euclidean_distance(v1, v2):
 
 def calculate_distances(test_weights, train_weights):
     """Calculate the distance between a single test weight and a list of train weights."""
-    distances = [[euclidean_distance(test_weight, train_weight) for train_weight in train_weights] for test_weight in test_weights]
+    distances = [[(euclidean_distance(test_weight, train_weight), train_name, test_name) for train_weight, train_name in train_weights] 
+                 for test_weight, test_name in test_weights]
 
     return distances 

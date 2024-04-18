@@ -1,14 +1,11 @@
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import create_matrices, create_vectors, display_matrix, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights, euclidean_distance, calculate_distances
+from utils import create_matrices, create_vectors, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights, euclidean_distance, calculate_distances
 
 # List of matrices for training images
-train_matrices = create_matrices('faces2/train')
-test_matrices = create_matrices('faces2/test')
-
-# Convert train_matrices to a NumPy array
-train_matrices_array = np.array(train_matrices)
+train_matrices = create_matrices('Olivetti/train')
+test_matrices = create_matrices('Olivetti/test')
 
 # Display an example matrix
 #display_matrix(train_matrices_array[0])
@@ -27,69 +24,64 @@ train_vectors_matrix, mean_face_vector = calculate_mean_face(train_vectors)
 display_mean_face(mean_face_vector)
 
 # Subtract mean_face_vector from train_vectors
-train_vectors_minus_mean = [vector - mean_face_vector for vector in train_vectors]
+train_vectors_minus_mean = [(vector - mean_face_vector, filename) for vector, filename in train_vectors]
 
 # Subtract mean_face_vector from test_vectors
-test_vectors_minus_mean = [vector - mean_face_vector for vector in test_vectors]
+test_vectors_minus_mean = [(vector - mean_face_vector, filename) for vector, filename in test_vectors]
 
 # Get the covariance Matrix 
 covariance_matrix = calculate_covariance_matrix(train_vectors_matrix)
-'''
-# Display the covariance matrix
-print(f"Covariance Matrix (C): {covariance_matrix}")
 
-print("Dimensions of Covariance Matrix (C):", covariance_matrix.shape)
-'''
+# Calculate eigen
 eigenvalues, eigenvectors, eigenfaces = calculate_eigen(covariance_matrix)
-'''
-# Display the subset of eigenvalues
-print("Subset of Eigenvalues:")
-print(eigenvalues)
 
-# Display the subset of eigenvectors
-print("\nSubset of Eigenvectors:")
-print(eigenvectors)
-
-# Display the normalized eigenvectors
-print("Eigenfaces (Normalized Eigenvectors):")
-print(eigenfaces)
-'''
 train_weights = calculate_weights(eigenfaces, train_vectors_minus_mean)
-'''
 
-# Print the weights for each image
-for i, weights in enumerate(train_weights):
-    print(f"Weights for image {i+1}:")
-    print(weights)
-    print()
-'''
 
 """# Testing"""
 
 test_weights = calculate_weights(eigenfaces, test_vectors_minus_mean)
-'''
-# Print the weights for each testing image
-for i, weights in enumerate(test_weights):
-    print(f"Weights for testing image {i+1}:")
-    print(weights)
-    print()
-'''
 
 # Calculate euclidean distances 
 all_distances = calculate_distances(test_weights, train_weights)
-
+for distances in all_distances:
+    for distance, train, test in distances:
+        print(distance)
+        print(train)
+        print(test)
+        print("\n\n\n")
+    
 # Find the maximum distance
-max_distance  = max(max(distances) for distances in all_distances)
-
+max_distance = max(max(distance_tuple[0] for distance_tuple in distances) for distances in all_distances)
+print(max_distance)
 # Define the threshold (T) as half of the maximum distance
-T = max_distance / 2
+T = max_distance / 3
 
 # Classify the testing images
-for i, weight in enumerate(test_weights):
-    min_distance = min(all_distances[i])
+for i, distances in enumerate(all_distances):
+    distances_values = [distance[0] for distance in distances]
+    min_distance = min(distances_values)
     if min_distance < T:
-        min_index = np.argmin(all_distances[i])
-        print(f"Testing image {i+1} belongs to class {min_index+1}")
+        min_index = np.argmin(distances_values)
+        corresponding_train_name = distances[min_index][1]
+        corresponding_test_name = distances[min_index][2]  
+
+        # Load the images
+        test_image = Image.open(f'Olivetti/test/{corresponding_test_name}')
+        train_image = Image.open(f'Olivetti/train/{corresponding_train_name}')
+
+        # Create a figure to display both images side by side
+        plt.figure(figsize=(10, 5))
+        plt.subplot(1, 2, 1)
+        plt.imshow(test_image, cmap='grey')
+        plt.title(f"Test Image {i+1}")
+        plt.axis('off')  # Hide axes
+
+        plt.subplot(1, 2, 2)
+        plt.imshow(train_image, cmap='grey')
+        plt.title(f"Matched with {corresponding_train_name}")
+        plt.axis('off')  # Hide axes
+
+        plt.show()
     else:
         print(f"Testing image {i+1} is unknown")
-
