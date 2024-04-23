@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import math
 
+
 # Function to load and resize image
 # Function to convert image to matrix
 def load_image(image_path, size=(112,112)):
@@ -18,9 +19,10 @@ def create_matrices(folder_path):
     matrices = []
     for dirpath, dirnames, filenames in os.walk(folder_path):
         for filename in filenames:
-            image_path = os.path.join(dirpath, filename)
-            matrix = load_image(image_path)    
-            matrices.append((matrix, filename))
+            if filename.endswith(('.jpg', '.jpeg', 'png')):
+                image_path = os.path.join(dirpath, filename)
+                matrix = load_image(image_path)    
+                matrices.append((matrix, filename))
 
     return matrices
 
@@ -44,7 +46,6 @@ def display_matrices(matrices):
     for i, (matrix, filename) in enumerate(matrices):
         plt.subplot(num_rows, num_cols, i + 1)
         plt.imshow(matrix, cmap='gray')
-        plt.title(f'Image {filename}')
         plt.axis('off')
 
     plt.show()

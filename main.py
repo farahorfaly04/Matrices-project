@@ -4,8 +4,8 @@ import numpy as np
 from utils import create_matrices, create_vectors, display_matrices, calculate_mean_face, display_mean_face, calculate_covariance_matrix, calculate_eigen, calculate_weights, euclidean_distance, calculate_distances
 
 # List of matrices for training images
-train_matrices = create_matrices('Olivetti/train')
-test_matrices = create_matrices('Olivetti/test')
+train_matrices = create_matrices('Faces')
+test_matrices = create_matrices('Faces')
 
 # Display an example matrix
 #display_matrix(train_matrices_array[0])
