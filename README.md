@@ -1,4 +1,4 @@
-# Matrices Project
+# Matrices & Linear Transformations Project
 
 This project involves the use of the Olivetti faces dataset to perform face recognition using Principal Component Analysis (PCA). The project saves images, converts them into matrices, computes mean faces, eigenfaces, and classifies test images based on their Euclidean distances from training images.
 
