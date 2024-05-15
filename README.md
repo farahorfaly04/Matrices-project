@@ -4,7 +4,6 @@ This project involves the use of the Olivetti faces dataset to perform face reco
 
 ## Files
 
-- **save_images.py**: Fetches the Olivetti faces dataset, splits it into training and testing sets, and saves the images to specified directories.
 - **utils.py**: Contains utility functions for loading and processing images, creating matrices and vectors, calculating the mean face, covariance matrix, eigenvalues, eigenvectors, and weights, and computing Euclidean distances.
 - **main.py**: The main script that utilizes functions from `utils.py` to perform face recognition.
 
@@ -29,13 +28,7 @@ This project involves the use of the Olivetti faces dataset to perform face reco
 
 ## Usage
 
-1. **Save Images**:
-    ```bash
-    python save_images.py
-    ```
-    This script will save the training and testing images from the Olivetti dataset into the `Olivetti/train` and `Olivetti/test` directories, respectively.
-
-2. **Run the Main Script**:
+1. **Run the Main Script**:
     ```bash
     python main.py
     ```
@@ -48,10 +41,6 @@ This project involves the use of the Olivetti faces dataset to perform face reco
     - Compute Euclidean distances between test and train weights and classify the test images based on these distances.
 
 ## Functions
-
-### save_images.py
-
-- **prepare_and_save_data(directory)**: Fetches the Olivetti faces dataset, splits it into training and testing sets, and saves the images to the specified directory.
 
 ### utils.py
 
@@ -71,10 +60,3 @@ This project involves the use of the Olivetti faces dataset to perform face reco
 
 The project displays the test images and their closest matching training images if the Euclidean distance is below a defined threshold. If no close match is found, the test image is classified as unknown.
 
-## Contributing
-
-If you'd like to contribute to this project, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License.
